@@ -1,0 +1,143 @@
+/* === BODY y HTML general === conecta con <html> y <body> */
+html,
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #a8e063, #56ab2f); /* degradado verde */
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* === ENCABEZADO animado === conecta con <div class="box"> en <header> */
+.box {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+.box .inner {
+    width: 400px;
+    height: 200px;
+    line-height: 200px;
+    font-size: 3.5em;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* Primer bloque del título */
+.box .inner:first-child {
+    background: linear-gradient(to right, #2ecc71, #27ae60); /* verde claro → oscuro */
+    color: #0b3d0b;
+    transform-origin: right;
+    transform: perspective(100px) rotateY(-15deg);
+}
+
+/* Segundo bloque del título */
+.box .inner:last-child {
+    background: linear-gradient(to left, #2ecc71, #27ae60);
+    color: #eaffea;
+    transform-origin: left;
+    transform: perspective(100px) rotateY(15deg);
+}
+
+/* Texto animado del encabezado */
+.box .inner span {
+    position: absolute;
+    animation: marquee 6s linear infinite;
+    text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88; /* efecto glow neón */
+}
+
+/* Ajuste para que no inicie al mismo tiempo */
+.box .inner:first-child span {
+    animation-delay: 3s;
+    left: -100%;
+}
+
+/* Animación tipo "marquee digital" */
+@keyframes marquee {
+    from { left: 100%; }
+    to { left: -100%; }
+}
+
+/* === NAVEGACIÓN === conecta con <nav><ul><li><a> */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline-block;
+}
+
+nav ul li a {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(to bottom, #00b09b, #96c93d); /* verde-azul degradado */
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Animación al pasar el mouse sobre los botones */
+nav ul li a:hover {
+    transform: scale(1.15) rotate(-2deg);
+    background: linear-gradient(to bottom, #11998e, #38ef7d);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* === SECCIONES PRINCIPALES === conecta con <section> */
+section {
+    background: linear-gradient(to left, #ffffff, #c0ffb3);
+    margin: 20px auto;
+    padding: 25px;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: transform 0.3s;
+}
+
+/* Efecto flotante al pasar el mouse sobre una sección */
+section:hover {
+    transform: translateY(-5px);
+}
+
+/* === FOOTER === conecta con <footer> */
+footer {
+    text-align: center;
+    padding: 25px;
+    background: linear-gradient(to right, #00b09b, #96c93d);
+    color: azure;
+    margin-top: 80px;
+    width: 160%;                /* Ocupa todo el ancho */
+    border-radius: 3;           /* Sin bordes redondeados */
+}
+
+
+/* === LINKS GENERALES === conecta con cualquier <a> */
+a {
+    font-size: 22px;
+    text-decoration: none;
+    color: azure;
+    transition: all 0.3s ease;
+}
+
+/* Efecto general al pasar el mouse sobre enlaces */
+a:hover {
+    color: #e0ffcf;
+    font-size: 25px;
+    text-shadow: 0px 0px 8px #00ff88;
+}

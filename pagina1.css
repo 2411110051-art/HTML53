@@ -1,0 +1,129 @@
+/* =============================
+   Fondo general (anochecer)
+   Conecta con <body> del HTML
+============================= */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+/* =============================
+   Contenedor del título
+   Conecta con <div id="container">
+============================= */
+#container {
+  text-align: center;
+  margin: 40px 0;
+}
+
+/* Contenedor para centrar el nombre */
+#container {
+  text-align: center;
+  margin: 40px 0;
+}
+
+/* Nombre con efecto neón */
+.p_titulo a {
+  font-size: 80px;              /* Tamaño grande */
+  font-weight: bold;
+  color: #fff;                  /* Texto base blanco */
+  text-transform: uppercase;    /* Mayúsculas */
+  text-decoration: none;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: 4px;
+
+  /* Efecto neón con varias capas */
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px rgb(68, 0, 255),   /* rosa neón */
+    0 0 40px rgb(89, 0, 255),
+    0 0 80px rgb(55, 0, 255),
+    0 0 90px rgb(38, 0, 255),
+    0 0 100px rgb(89, 0, 255);
+    
+  /* Animación para brillar */
+  animation: flicker 4s infinite alternate;
+}
+
+/* Parpadeo de neón */
+@keyframes flicker {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.95; text-shadow: 0 0 15px #f09, 0 0 30px #f09, 0 0 60px #f09; }
+  100% { opacity: 1; }
+}
+
+/* =============================
+   Menú de navegación
+   Conecta con <nav><ul><li><a>
+============================= */
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+nav ul li {
+  display: inline-block;
+}
+
+nav ul li a {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #1b2a49;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+nav ul li a:hover {
+  background: #00f;
+  color: #0ff;
+  transform: scale(1.1);
+}
+
+/* =============================
+   Secciones principales
+   Conecta con <section> y <article>
+============================= */
+section {
+  background: rgba(30, 60, 114, 0.9);
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+section h1 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #00f;
+}
+
+section p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* =============================
+   Footer
+   Conecta con <footer>
+============================= */
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #16222a;
+  color: #fff;
+  margin-top: 40px;
+  border-top: 3px solid #0ff;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #00f;
+}
