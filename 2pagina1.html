@@ -4,24 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Página Personal - Solo menú hamburguesa</title>
-  <!-- Tailwind CDN -->
+  
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-cover bg-center text-white" style="background-image: url('imagenes/fondo3.jpg');">
 
-  <!-- NAVBAR -->
+  
   <nav class="relative flex items-center justify-between p-6 lg:px-12">
-    <!-- LOGO -->
+   
     <div>
       <img src="imagenes/MAUS-removebg-preview.png" alt="Logo" class="h-18 w-24" />
     </div>
 
-    <!-- BOTÓN HAMBURGUESA (siempre visible ahora) -->
+    
     <button id="menu-btn"
             class="p-2 rounded-md focus:outline-none"
             aria-controls="mobile-menu"
             aria-expanded="false">
-      <!-- iconos SVG -->
+      
       <svg id="icon-open" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
@@ -30,30 +30,30 @@
       </svg>
     </button>
 
-    <!-- MENÚ DESPLEGABLE -->
+    
     <div id="mobile-menu"
          class="hidden absolute right-6 top-full mt-3 bg-black/70 backdrop-blur-sm p-4 rounded-xl z-50">
       <div class="flex flex-col space-y-2 text-lg font-semibold">
-        <a href="#sobre-mi" class="block px-3 py-2 rounded hover:bg-white/10">SOBRE MI</a>
-        <a href="#proyectos" class="block px-3 py-2 rounded hover:bg-white/10">PROYECTOS</a>
-        <a href="#trabajos" class="block px-3 py-2 rounded hover:bg-white/10">TRABAJOS</a>
-        <a href="#contacto" class="block px-3 py-2 rounded hover:bg-white/10">CONTACTAME</a>
+        <a href="http://127.0.0.1:5500/2pagina3.html" class="block px-3 py-2 rounded hover:bg-white/10">JUEGOS</a>
+        <a href="http://127.0.0.1:5500/link1.html" class="block px-3 py-2 rounded hover:bg-white/10">CSS1</a>
+        <a href="http://127.0.0.1:5500/pagina1.html" class="block px-3 py-2 rounded hover:bg-white/10">CSS2</a>
+        <a href="http://127.0.0.1:5500/pagina2.html" class="block px-3 py-2 rounded hover:bg-white/10">CSS3</a>
       </div>
     </div>
   </nav>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  
   <main class="flex flex-col items-center justify-center text-center mt-24 px-4">
     <h1 class="text-4xl md:text-6xl font-extrabold mb-6">SE TU MISMO</h1>
     <p class="text-base md:text-lg italic">"La vida no consiste en tener buenas cartas, sino en saber jugar las que se tienen"</p>
   </main>
 
   <div class="mt-10 flex items-center justify-center gap-x-6">
-    <a href="#" class="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">SOBRE</a>
-    <a href="#" class="text-sm/6 font-semibold text-white">CONOCER MAS <span aria-hidden="true">→</span></a>
+    <a href="http://127.0.0.1:5500/index.html" class="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">MAQUETA</a>
+    <a href="http://127.0.0.1:5500/2pagina4.html" class="text-sm/6 font-semibold text-white">SOBRE MI<span aria-hidden="true">→</span></a>
   </div>
 
-  <!-- SCRIPT -->
+  
   <script>
     const btn = document.getElementById('menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -63,13 +63,13 @@
     btn.addEventListener('click', () => {
       const open = mobileMenu.classList.contains('hidden');
       if (open) {
-        // abrir
+        
         mobileMenu.classList.remove('hidden');
         btn.setAttribute('aria-expanded', 'true');
         iconOpen.classList.add('hidden');
         iconClose.classList.remove('hidden');
       } else {
-        // cerrar
+        
         mobileMenu.classList.add('hidden');
         btn.setAttribute('aria-expanded', 'false');
         iconOpen.classList.remove('hidden');
@@ -77,7 +77,7 @@
       }
     });
 
-    // cerrar menú si cambian tamaño (ejemplo, de móvil a escritorio)
+    
     const mq = window.matchMedia('(min-width: 1024px)');
     function handleResize(e) {
       if (e.matches) {

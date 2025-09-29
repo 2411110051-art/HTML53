@@ -14,7 +14,6 @@
       overflow: hidden;
     }
 
-    /* 🎥 Video de fondo */
     #bg-video {
       position: fixed;
       top: 0;
@@ -25,13 +24,11 @@
       z-index: -1;
     }
 
-    /* Layout */
     .container {
       display: flex;
       height: 100vh;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 250px;
       background: rgba(0, 0, 0, 0.7);
@@ -61,13 +58,14 @@
     }
     .menu li button:hover {background: rgba(255, 255, 255, 0.4);}
 
-    /* Contenido */
     .content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end; /* 👈 baja todo hacia el fondo */
+      justify-content: flex-end; 
+      align-items: center;     
       padding: 20px;
+      padding-bottom: 60px;     
     }
 
     .games-container {
@@ -75,9 +73,9 @@
       justify-content: center;
       gap: 20px;
       padding: 20px;
+      flex-wrap: wrap;
     }
 
-    /* Cards */
     .game-card {
       background: rgba(0, 0, 0, 0.6);
       border-radius: 12px;
@@ -100,7 +98,6 @@
     .game-card h3 {font-size: 16px; margin-bottom: 6px;}
     .game-card p {font-size: 14px; opacity: 0.85;}
 
-    /* Botón hamburguesa móvil */
     .menu-toggle {
       display: none;
       position: absolute;
@@ -129,98 +126,102 @@
       .content {margin-top: 50px;}
       .games-container {flex-wrap: wrap;}
     }
+
+   
+    
   </style>
 </head>
 <body>
 
-  <!-- 🎥 Video de fondo -->
   <video autoplay muted loop id="bg-video">
     <source src="imagenes/COPIA1.mp4" type="video/mp4">
-    Tu navegador no soporta video.
   </video>
 
-  <!-- Botón hamburguesa -->
   <button class="menu-toggle" id="menuToggle">☰</button>
 
   <div class="container">
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-      <h2>🎮 Juegos</h2>
+      <h2>🎮 JUEGOS</h2>
       <ul class="menu">
-        <li><button onclick="mostrarCategoria('carreras')">🚗 Carreras</button></li>
-        <li><button onclick="mostrarCategoria('accion')">🔫 Acción</button></li>
-        <li><button onclick="mostrarCategoria('puzzle')">🧩 Puzzle</button></li>
-        <li><button onclick="mostrarCategoria('deportes')">⚽ Deportes</button></li>
-        <li><button onclick="mostrarCategoria('estrategia')">♟️ Estrategia</button></li>
-        <li><button onclick="mostrarCategoria('aventura')">🏞️ Aventura</button></li>
-        <li><button onclick="window.location.href='index.html'">🏠 Página Principal</button></li>
+        <li><button onclick="mostrarCategoria('carreras')">🚗 CARRERAS</button></li>
+        <li><button onclick="mostrarCategoria('accion')">🔫 ACCION</button></li>
+        <li><button onclick="mostrarCategoria('puzzle')">🧩 PUZZLE</button></li>
+        <li><button onclick="mostrarCategoria('deportes')">⚽ DEPORTES</button></li>
+        <li><button onclick="mostrarCategoria('estrategia')">♟️ ESTRATEGIA</button></li>
+        <li><button onclick="mostrarCategoria('aventura')">🏞️ AVENTURA</button></li>
+        <li><button onclick="window.location.href='index.html'">🏠 MAQUETA </button></li>
+         <li><button onclick="window.location.href='2pagina1.html'">PAGINA PRICIPAL</button></li>
+          <li><button onclick="window.location.href='2pagina4.html'">MI PERFIL</button></li>
       </ul>
     </div>
 
-    <!-- Contenido -->
-    <div class="content">
-      <div class="games-container" id="content">
-        <h2>Selecciona una categoría</h2>
-      </div>
-    </div>
+<div class="content">
+  <div class="titulo-categoria">
+    <!-- Botón eliminado -->
   </div>
+  <div class="games-container" id="content"></div>
+</div>
+
 
   <script>
     const content = document.getElementById("content");
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
 
-    // Toggle menú móvil
     menuToggle.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
 
+    const data = {
+      carreras: [
+        { nombre: "Need for Speed", desc: "Velocidad y adrenalina en las calles.", img: "https://i.ibb.co/vJjHk9k/nfs.jpg" },
+        { nombre: "Gran Turismo", desc: "Simulación de carreras realista.", img: "https://i.ibb.co/0jM2QmH/granturismo.jpg" },
+        { nombre: "Mario Kart", desc: "Diversión familiar con Mario y amigos.", img: "https://i.ibb.co/n8pMchB/mariokart.jpg" },
+        { nombre: "Forza Horizon", desc: "Mundo abierto lleno de coches.", img: "https://i.ibb.co/8dYqV8y/forza.jpg" }
+      ],
+      accion: [
+        { nombre: "Call of Duty", desc: "Shooter bélico con multijugador.", img: "https://i.ibb.co/3M9gQ7p/cod.jpg" },
+        { nombre: "DOOM Eternal", desc: "Acción frenética contra demonios.", img: "https://i.ibb.co/5WR2nS6/doom.jpg" },
+        { nombre: "Fortnite", desc: "Battle Royale lleno de acción.", img: "https://i.ibb.co/M74B2Pf/fortnite.jpg" },
+        { nombre: "Apex Legends", desc: "Héroes y batallas intensas.", img: "https://i.ibb.co/hZ6PSqS/apex.jpg" }
+      ],
+      puzzle: [
+        { nombre: "Tetris", desc: "El clásico juego de piezas.", img: "https://i.ibb.co/F3gMz9T/tetris.jpg" },
+        { nombre: "Portal 2", desc: "Rompecabezas con portales.", img: "https://i.ibb.co/V9K6G64/portal2.jpg" },
+        { nombre: "Candy Crush", desc: "Puzzle casual adictivo.", img: "https://i.ibb.co/Fm6L1MW/candy.jpg" },
+        { nombre: "The Witness", desc: "Rompecabezas en un mundo abierto.", img: "https://i.ibb.co/3S2n4tP/witness.jpg" }
+      ],
+      deportes: [
+        { nombre: "FIFA", desc: "El simulador de fútbol más famoso.", img: "https://i.ibb.co/sgkfwqz/fifa.jpg" },
+        { nombre: "NBA 2K", desc: "El mejor baloncesto virtual.", img: "https://i.ibb.co/7G9R1pP/nba2k.jpg" },
+        { nombre: "PES", desc: "Otro clásico del fútbol competitivo.", img: "https://i.ibb.co/5LJRbwN/pes.jpg" },
+        { nombre: "Madden NFL", desc: "Fútbol americano realista.", img: "https://i.ibb.co/3r74hF6/madden.jpg" }
+      ],
+      estrategia: [
+        { nombre: "Age of Empires", desc: "Estrategia en tiempo real.", img: "https://i.ibb.co/hHt0Ych/aoe.jpg" },
+        { nombre: "Civilization VI", desc: "Construye un imperio duradero.", img: "https://i.ibb.co/pPCMc2L/civilization.jpg" },
+        { nombre: "Starcraft II", desc: "Estrategia espacial intensa.", img: "https://i.ibb.co/vqLmS2w/starcraft.jpg" },
+        { nombre: "Clash of Clans", desc: "Construcción y batallas online.", img: "https://i.ibb.co/6YskwJQ/clash.jpg" }
+      ],
+      aventura: [
+        { nombre: "Zelda: BOTW", desc: "Explora un mundo abierto inmenso.", img: "https://i.ibb.co/BrPn3y1/zelda.jpg" },
+        { nombre: "Tomb Raider", desc: "Lara Croft en busca de tesoros.", img: "https://i.ibb.co/BPfT0S7/tombraider.jpg" },
+        { nombre: "Uncharted", desc: "Aventuras con Nathan Drake.", img: "https://i.ibb.co/2h7K9z2/uncharted.jpg" },
+        { nombre: "Minecraft", desc: "Construye y explora libremente.", img: "https://i.ibb.co/GcT9Xds/minecraft.jpg" }
+      ]
+    };
+
     function mostrarCategoria(categoria) {
+      if (!data[categoria]) {
+        content.innerHTML = "<p style='color:#fff;'>Categoría vacía.</p>";
+        return;
+      }
+
       let juegos = "";
-
-      const data = {
-        carreras: [
-          { nombre: "Need for Speed", desc: "Velocidad y adrenalina en las calles." },
-          { nombre: "Gran Turismo", desc: "Simulación de carreras realista." },
-          { nombre: "Mario Kart", desc: "Diversión familiar con Mario y amigos." },
-          { nombre: "Forza Horizon", desc: "Mundo abierto lleno de coches." }
-        ],
-        accion: [
-          { nombre: "Call of Duty", desc: "Shooter bélico con multijugador." },
-          { nombre: "DOOM Eternal", desc: "Acción frenética contra demonios." },
-          { nombre: "Fortnite", desc: "Battle Royale lleno de acción." },
-          { nombre: "Apex Legends", desc: "Héroes y batallas intensas." }
-        ],
-        puzzle: [
-          { nombre: "Tetris", desc: "El clásico juego de piezas." },
-          { nombre: "Portal 2", desc: "Rompecabezas con portales." },
-          { nombre: "Candy Crush", desc: "Puzzle casual adictivo." },
-          { nombre: "The Witness", desc: "Rompecabezas en un mundo abierto." }
-        ],
-        deportes: [
-          { nombre: "FIFA", desc: "El simulador de fútbol más famoso." },
-          { nombre: "NBA 2K", desc: "El mejor baloncesto virtual." },
-          { nombre: "PES", desc: "Otro clásico del fútbol competitivo." },
-          { nombre: "Madden NFL", desc: "Fútbol americano realista." }
-        ],
-        estrategia: [
-          { nombre: "Age of Empires", desc: "Estrategia en tiempo real." },
-          { nombre: "Civilization VI", desc: "Construye un imperio duradero." },
-          { nombre: "Starcraft II", desc: "Estrategia espacial intensa." },
-          { nombre: "Clash of Clans", desc: "Construcción y batallas online." }
-        ],
-        aventura: [
-          { nombre: "Zelda: BOTW", desc: "Explora un mundo abierto inmenso." },
-          { nombre: "Tomb Raider", desc: "Lara Croft en busca de tesoros." },
-          { nombre: "Uncharted", desc: "Aventuras con Nathan Drake." },
-          { nombre: "Minecraft", desc: "Construye y explora libremente." }
-        ]
-      };
-
-      data[categoria].forEach((juego, i) => {
+      data[categoria].forEach((juego) => {
         juegos += `
           <div class="game-card">
-            <img src="https://picsum.photos/200?random=${i+1}" alt="${juego.nombre}">
+            <img src="${juego.img}" alt="${juego.nombre}">
             <h3>${juego.nombre}</h3>
             <p>${juego.desc}</p>
           </div>
@@ -229,13 +230,16 @@
 
       content.innerHTML = juegos;
 
+      // 🚀 Ocultar botón de "Selecciona una categoría"
+      document.querySelector(".titulo-categoria").style.display = "none";
+
       // En móvil, cerrar menú al elegir
       if (window.innerWidth <= 768) {
         sidebar.classList.remove("active");
       }
     }
 
-    // Activar audio al hacer clic
+    // Activar audio del video al primer clic
     const bgVideo = document.getElementById("bg-video");
     document.addEventListener("click", () => {
       bgVideo.muted = false;

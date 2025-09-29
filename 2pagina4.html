@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>About the Team</title>
   <style>
-    /* ==== RESET ==== */
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html,body { height:100%; }
 
@@ -14,7 +14,7 @@
       color: white;
       min-height: 100vh;
       background: url('imagenes/videoframe_21966.png') center center fixed no-repeat;
-      background-size: cover;     /* 👈 siempre cubre toda la pantalla */
+      background-size: cover;   
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
@@ -22,7 +22,6 @@
       padding-bottom: 2rem;
     }
 
-    /* ==== HEADER ==== */
     header {
       width: 100%;
       display: flex;
@@ -39,7 +38,6 @@
       text-align: center;
     }
 
-    /* ==== BOTÓN MENÚ ==== */
     .menu-btn {
       position: absolute;
       right: 2rem;
@@ -72,7 +70,6 @@
       transform: rotate(-45deg) translate(7px,-7px);
     }
 
-    /* ==== NAV DESPLEGABLE ==== */
     nav {
       position: absolute;
       top: 70px;
@@ -117,7 +114,6 @@
       color: #ff80bf;
     }
 
-    /* Texto introductorio */
     .intro {
       max-width: 700px;
       text-align: center;
@@ -127,7 +123,6 @@
       padding: 0 1rem;
     }
 
-    /* ==== TEAM GRID ==== */
     .team {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -136,11 +131,10 @@
       max-width: 1400px;
       margin-bottom: 3rem;
       align-items: stretch;
-      margin-top: 5rem; /* 👈 mover más abajo los cuadros */
-      transform: scale(0.9); /* 👈 reducir un poco todo el grid */
+      margin-top: 5rem; 
+      transform: scale(0.9); 
     }
 
-    /* ==== CARD ==== */
     .card {
       position: relative;
       border-radius: 18px;
@@ -192,7 +186,7 @@
     .card:hover .card-inner { transform: scale(1.02); }
 
     .card img {
-      width: 110px;  /* 👈 más pequeñas */
+      width: 110px;  
       height: 110px;
       object-fit: cover;
       border-radius: 50%;
@@ -224,74 +218,73 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
+
   <header>
-    <h1>About the Team</h1>
+    <h1>MAS QUE COLEGAS , SOMOS FAMALIA</h1>
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu" title="Abrir menú">
       <span></span><span></span><span></span>
     </button>
   </header>
 
-  <!-- Menú -->
   <nav id="menu" aria-hidden="true">
-    <a href="#home">Home</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-    <button class="music-btn" id="music-btn">Play Music</button>
+    <a href="http://127.0.0.1:5500/2pagina1.html">PAGINA PRINCIPAL</a>
+    <a href="http://127.0.0.1:5500/2pagina3.html">JUEGOS</a>
+    <a href="http://127.0.0.1:5500/2pagina4.html">INTEGRANTES</a>
+     <a href="http://127.0.0.1:5500/index.html">MAQUETA</a>
+    <button class="music-btn" id="music-btn">MUSICALIBRE</button>
   </nav>
 
-  <!-- Texto Intro -->
   <p class="intro">
-    We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.
+    SOMOS UN GRUPO DINAMICO,CADA UNO TIENE UNA PASION E INSPIRACION
+    INDIVIDUAL POR LA SOLUCION DE PROBLEMAS A TRAVEZ DE LA PROGRAMACION.
   </p>
 
-  <!-- Sección del equipo -->
+ 
   <section class="team" aria-label="Team">
     <div class="card">
       <div class="card-inner">
         <img src="https://i.pravatar.cc/200?img=47" alt="Leslie">
-        <h2>Leslie Alexander</h2>
-        <p class="role">Co-Founder / CEO</p>
-        <p>Ultricies massa malesuada viverra cras lobortis. Tempor orci hac ligula dapibus mauris sit ut eu.</p>
+        <h2>CUDROS YARANGA JESUS</h2>
+        <p class="role">DWS</p>
+        <p>ESPECIALISTA EN MEJORAR PROGRAMAS DE HTML,CSS Y JAVASCRIP.</p>
       </div>
     </div>
 
     <div class="card">
       <div class="card-inner">
         <img src="https://i.pravatar.cc/200?img=12" alt="Michael">
-        <h2>Michael Foster</h2>
-        <p class="role">Co-Founder / CTO</p>
-        <p>Turpis lectus et amet elementum. Mi duis integer sed in vitae consequat.</p>
+        <h2>DIAZ TASAYCO HENRY</h2>
+        <p class="role">DW Y PAYTON</p>
+        <p>RESUELVE PROBLEMAS DE ESTANCAMIENTO DE PROGRAMAS Y ACTUALIZACIONES DE LAS MISMAS.</p>
       </div>
     </div>
 
     <div class="card">
       <div class="card-inner">
         <img src="https://i.pravatar.cc/200?img=32" alt="Sofia">
-        <h2>Sofia Perez</h2>
-        <p class="role">Lead Designer</p>
-        <p>Creative thinker with a passion for beautiful design and user experience.</p>
+        <h2>SALCEDO VEGA ANDRES</h2>
+        <p class="role">HABILIDAD POKEMON DESCONOCIDA</p>
+        <p>ES CREATIVO Y TIENE EXPERIENCIA EN PROGRAMACION EN DIVERSAS AREAS.</p>
       </div>
     </div>
 
     <div class="card">
       <div class="card-inner">
         <img src="https://i.pravatar.cc/200?img=55" alt="David">
-        <h2>David Lee</h2>
-        <p class="role">Project Manager</p>
-        <p>Dedicated to building great teams and keeping everything running smoothly.</p>
+        <h2>SAIRITUPAP YURIGUAMAN LINDER</h2>
+        <p class="role">FINANCIADOR DE PROYECTOS</p>
+        <p>RESALTA POR TENER LAS FIJAS DE BETANO Y FINANCIAR DE ESA MANERA PROYECTOS ELABORADOS.</p>
       </div>
     </div>
   </section>
 
-  <!-- ==== AUDIO ==== -->
   <audio id="bg-music" loop>
     <source src="imagenes/musicadefondo.mp3" type="audio/mp3">
     Tu navegador no soporta el audio.
   </audio>
 
   <script>
-    // Toggle menú
+
     const menu = document.getElementById('menu');
     const btn  = document.getElementById('menuBtn');
 
@@ -314,24 +307,24 @@
       setMenuOpen(!menu.classList.contains('open'));
     });
 
-    // Cerrar al hacer click fuera
+   
     document.addEventListener('click', (e) => {
       if (!menu.contains(e.target) && !btn.contains(e.target)) setMenuOpen(false);
     });
 
-    // Cerrar al hacer click en un enlace normal (excepto el de música)
+    
     menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenuOpen(false)));
 
-    // Cerrar con Escape
+   
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenuOpen(false); });
 
-    // ==== Control de Audio ====
+    
     const music = document.getElementById("bg-music");
     const musicBtn = document.getElementById("music-btn");
     let playing = false;
 
     musicBtn.addEventListener("click", (e) => {
-      e.stopPropagation(); // No cierre el menú
+      e.stopPropagation(); 
       if (!playing) {
         music.play();
         musicBtn.textContent = "Pause Music";
