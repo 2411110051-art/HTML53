@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Proyecto Juegos y Música — Versión Final</title>
+<style>
+  :root{
+    --sidebar-w:260px;
+    --accent-grad: linear-gradient(90deg,#00f0ff,#ff3ec8,#ffd400);
+    --bg1:#0b0b0f;
+    --bg2:#111233;
+    --panel-radius:12px;
+    --btn-hov-scale:1.04;
+    --anim-time:360ms;
+  }
+
+  /* ===== Global layout ===== */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#e9eefb}
+  body{display:flex;flex-direction:column;overflow:hidden}
+
+  /* ===== Header (titulo que ocupa todo el ancho restante) ===== */
+  header{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    margin-left:var(--sidebar-w);
+    margin-right:0;
+    z-index:30;
+    background:transparent;
+  }
+  .title-wrap{
+    width:calc(100% - 40px);
+    background:#000; /* negro interior */
+    border-radius:10px;
+    padding:12px 20px;
+    position:relative;
+    overflow:visible;
+  }
+  /* Borde brillante animado */
+  .title-wrap::before{
+    content:"";
+    position:absolute;
+    inset:-3px;
+    border-radius:14px;
+    border:2px solid;
+    border-image: var(--accent-grad) 1;
+    animation: hue 6s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+  .title-text{
+    font-weight:900;
+    font-size:20px;
+    letter-spacing:0.6px;
+    background:linear-gradient(90deg,#ff00ff,#00ffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  /* ===== Main area ===== */
+  .app{
+    display:flex;
+    flex:1;
+    min-height:0; /* para overflow en children */
+  }
+
+  /* ===== Sidebar ===== */
+  aside.sidebar{
+    width:var(--sidebar-w);
+    min-width:var(--sidebar-w);
+    background:#0d0d12;
+    border-right:1px solid rgba(255,255,255,0.03);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    position:fixed;
+    left:0;top:0;bottom:0;
+    z-index:40;
+  }
+  .sidebar .brand{
+    font-weight:800;
+    font-size:18px;
+    text-align:center;
+    margin-bottom:12px;
+    background:linear-gradient(90deg,#ff00ff,#00ffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  /* border glow around sidebar */
+  .sidebar::after{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border-radius:8px;
+    border:2px solid;
+    border-image: var(--accent-grad) 1;
+    pointer-events:none;
+    opacity:0.95;
+    animation:hue 6s linear infinite;
+  }
+
+  /* menu container */
+  .menu-wrap{margin-top:8px}
+  .menu-list{display:flex;flex-direction:column;gap:10px}
+  .menu-btn{
+    background:transparent;
+    color: #eaf2ff;
+    border-radius:10px;
+    padding:10px 12px;
+    font-weight:700;
+    border:2px solid transparent;
+    cursor:pointer;
+    position:relative;
+    overflow:visible;
+    transition:transform var(--anim-time) ease, box-shadow var(--anim-time) ease;
+  }
+  .menu-btn.primary{border-image: var(--accent-grad) 1;}
+  .menu-btn:active{transform:translateY(1px) scale(.997)}
+  .menu-btn:hover{transform:scale(var(--btn-hov-scale));}
+
+  /* submenu area (we will inject buttons dynamically) */
+  .submenu { display:flex; flex-direction:column; gap:10px; padding-top:6px; }
+
+  /* Regresar footer: use only one button */
+  .sidebar-footer{padding-top:12px}
+  .back-btn{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    background:transparent;
+    color:#eaf2ff;
+    border:2px solid transparent;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .back-btn{ border-image: var(--accent-grad) 1; }
+
+  /* ===== Content area (to the right of sidebar) ===== */
+  main.content{
+    margin-left:var(--sidebar-w);
+    padding:18px 32px;
+    height:calc(100vh - 72px); /* header height accounted */
+    overflow:auto;
+    position:relative;
+  }
+
+  /* Helper: blank state (when nothing selected) */
+  .blank{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,0.35);
+    font-size:18px;
+  }
+
+  /* ===== Game / Music layout =====
+     Left: image area (outside frame)
+     Right: info area (overlay panel but NOT white)
+  */
+  .view-split{
+    display:flex;
+    gap:20px;
+    align-items:stretch;
+    height:100%;
+  }
+  /* Left image column: will host the game's image (transparent PNG) */
+  .left-image{
+    width:46%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+  }
+  .left-image img {
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    /* no white frame — image floats over background */
+    transition: transform .25s ease, box-shadow .25s ease;
+    filter: drop-shadow(0 8px 30px rgba(0,0,0,0.6));
+  }
+  /* Right info column: semi-transparent panel, NOT white */
+  .right-info {
+    width:54%;
+    padding:18px;
+    border-radius:12px;
+    background: linear-gradient(180deg, rgba(2,6,23,0.62), rgba(3,7,33,0.48));
+    backdrop-filter: blur(4px);
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+    overflow:auto;
+  }
+  .info-title{font-size:22px;font-weight:800;margin-bottom:8px}
+  .info-meta{color:rgba(255,255,255,0.75);margin-bottom:12px}
+  .info-desc{color:rgba(235,240,255,0.95);line-height:1.5;white-space:pre-wrap}
+  .stars { margin-top:16px; font-size:20px; color:#ffd166; font-weight:800 }
+
+  /* Info background GIF area placeholders:
+     You can replace the CSS 'background-image' on .info-gif (see comment in HTML).
+  */
+  .info-gif {
+    position:absolute;
+    inset:0;
+    z-index:0;
+    opacity:0.08;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:cover;
+    pointer-events:none;
+  }
+
+  /* ===== Music custom player ===== */
+  .player {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:stretch;
+  }
+  .player .meta { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .player .meta .song-title{ font-weight:800; font-size:18px; }
+  .controls{display:flex; gap:8px; align-items:center;}
+  .ctl-btn{ padding:10px 12px; border-radius:8px; background:linear-gradient(180deg,#0f1724,#0b1220); color:#fff; border:1px solid rgba(255,255,255,0.04); cursor:pointer; font-weight:800; box-shadow:0 6px 18px rgba(0,0,0,0.6); transition:transform 140ms ease}
+  .ctl-btn:hover{ transform:translateY(-3px) scale(1.02) }
+  /* Play icon toggle is handled in JS by updating innerHTML */
+  .progress{
+    height:8px;
+    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border-radius:999px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress .bar{
+    position:absolute; left:0; top:0; bottom:0; height:100%; width:0%;
+    background:linear-gradient(90deg,#00f0ff,#ff3ec8);
+    border-radius:999px;
+    transition:width 120ms linear;
+  }
+
+  /* waveform visual (simple animated bars) */
+  .waveform{ display:flex; gap:4px; align-items:end; height:36px; margin-left:8px }
+  .waveform .bar{
+    width:6px; background:linear-gradient(180deg,#9be6ff,#4ec7ff); border-radius:3px; transform-origin:bottom center;
+    animation: pulse 800ms infinite ease-in-out paused;
+  }
+  .waveform.playing .bar{ animation-play-state:running }
+  @keyframes pulse{
+    0%{transform:scaleY(.2);opacity:.6}
+    50%{transform:scaleY(1);opacity:1}
+    100%{transform:scaleY(.2);opacity:.6}
+  }
+
+  /* ===== Sobre mí (DNI style cards) ===== */
+  .dni-grid{ display:flex; gap:24px; align-items:flex-start; justify-content:center; padding-top:18px }
+  .dni-card{
+    width:420px;
+    background:#05060a;
+    border-radius:12px;
+    padding:16px;
+    color:#eaf2ff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 10px 30px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .dni-header{ display:flex; gap:12px; align-items:center; margin-bottom:12px }
+  .dni-photo{ width:110px; height:130px; border-radius:10px; background:linear-gradient(180deg,#222,#444); border:2px solid rgba(255,255,255,0.03); flex-shrink:0 }
+  .dni-info h3{ margin:0; font-size:18px }
+  .dni-field{ margin-top:8px; color:rgba(255,255,255,0.75) }
+
+  /* small screens */
+  @media (max-width:980px){
+    header{ margin-left:12px; padding:6px }
+    .title-wrap{ width:calc(100% - 24px) }
+    .left-image{ display:none }
+    .right-info{ width:100% }
+    .dni-grid{ flex-direction:column; align-items:stretch }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER (ocupa todo el ancho restante) -->
+  <header>
+    <div class="title-wrap" role="banner">
+      <div class="title-text">Bienvenidos a mi proyecto</div>
+    </div>
+  </header>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Menú lateral">
+      <div>
+        <div class="brand">Menú</div>
+        <div class="menu-wrap">
+          <!-- MAIN MENU (visible por defecto) -->
+          <div id="mainMenu" class="menu-list">
+            <button class="menu-btn primary" data-idx="0" onclick="openSection('juegos')">Juegos</button>
+            <button class="menu-btn primary" data-idx="1" onclick="openSection('musica')">Música</button>
+            <button class="menu-btn primary" data-idx="2" onclick="openSection('sobre')">Sobre mí</button>
+          </div>
+
+          <!-- SUBMENU: se rellenan dinámicamente -->
+          <div id="submenuArea" class="submenu" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <!-- Un solo botón Regresar (tu botón, funcional) -->
+      <div class="sidebar-footer">
+        <button id="backBtn" class="back-btn" onclick="goBack()">Regresar</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content" id="contentArea">
+      <!-- Por defecto, vacío / estado 'blank' -->
+      <div id="blankState" class="blank">Selecciona "Juegos" o "Música" en el menú para comenzar.</div>
+
+      <!-- Zona para GIF de fondo info (reemplazar según instrucciones) -->
+      <div id="infoGif" class="info-gif" aria-hidden="true"></div>
+    </main>
+  </div>
+
+<script>
+/* ============================
+   Estructura de datos (editar aquí)
+   - Reemplaza las rutas 'img' y 'audio' por tus archivos locales o URLs.
+   - Comentarios con "REEMPLAZAR" indican lugares a cambiar.
+   ============================ */
+
+const DATA = {
+  juegos:{
+    anime:[
+      {
+        id:'naruto',
+        nombre:'Naruto: Shinobi Legends',
+        estrellas:5,
+        img:'assets/juegos/naruto.png', // --- REEMPLAZAR: ruta a la imagen PNG de Naruto (sin fondo idealmente)
+        descripcion:`Naruto: Shinobi Legends es un RPG de acción que expande la historia del anime con misiones originales, combates por equipo y progresión de habilidades.
+        
+Desarrollador: Konoha Studio
+Año: 2020
+Género: RPG de acción / Aventura
+Plataformas: PC, Consolas
+
+Sinopsis extendida:
+Naruto Uzumaki, deseoso de ser reconocido, se enfrenta a nuevas amenazas que buscan explotar portales dimensionales. El jugador avanza por una estructura de misiones principales y secundarias, mejora técnicas, forja alianzas con otros ninjas y desbloquea jutsus avanzados. Incluye eventos de temporada, misiones cooperativas y un modo desafío.`
+      },
+      {
+        id:'dbz',
+        nombre:'Dragon Ball: Arena of Legends',
+        estrellas:4,
+        img:'assets/juegos/dragonball.png', // --- REEMPLAZAR: imagen Dragon Ball
+        descripcion:`Dragon Ball: Arena of Legends es un luchador 3D con énfasis en combates espectaculares, transformación de personajes y un modo historia que combina arcos clásicos y nuevos.
+
+Desarrollador: Capsule Works
+Año: 2019
+Género: Lucha / Acción
+Plataformas: PC, Consolas
+
+Sinopsis extendida:
+El juego permite recrear las batallas más icónicas y también nuevas rivalidades: desde sparrings en la Tierra hasta choques con enemigos cósmicos. Con un sistema de combos, medición de ki y transformaciones que cambian radicalmente la mecánica del combate.`
+      },
+      {
+        id:'sololeveling',
+        nombre:'Solo Leveling: Rise of Hunters',
+        estrellas:5,
+        img:'assets/juegos/sololeveling.png', // --- REEMPLAZAR
+        descripcion:`Basado en el popular manhwa, este título es un ARPG centrado en progresión de personaje y mazmorras dinámicas.
+
+Desarrollador: RedPortal Games
+Año: 2022
+Género: ARPG
+Plataformas: PC
+
+Sinopsis extendida:
+Jinwoo empieza débil y, tras un suceso misterioso, obtiene un sistema que le permite subir de nivel. El gameplay mezcla acción en tiempo real, árboles de habilidades, y contenido endgame como raids y mazmorras aleatorias con loot.`
+      }
+    ],
+    carreras:[
+      { id:'nfs', nombre:'Need For Speed: Urban Rush', estrellas:4, img:'assets/juegos/nfs.png',
+        descripcion:`Un arcade de carreras centrado en la adrenalina de la calle, personalización extensa de vehículos y persecuciones policiales.`},
+      { id:'gt', nombre:'Gran Turismo: Pro Circuit', estrellas:5, img:'assets/juegos/gt.png',
+        descripcion:`Simulador de conducción con físicas realistas, calendario de eventos y más de 400 coches licenciados.`},
+      { id:'mario', nombre:'Mario Kart: Drift Party', estrellas:3, img:'assets/juegos/mariokart.png',
+        descripcion:`Carreras familiares con ítems, pistas creativas y modos multijugador casuales.`}
+    ],
+    deportes:[
+      { id:'fifa', nombre:'FIFA: World Cup', estrellas:4, img:'assets/juegos/fifa.png',
+        descripcion:`Simulación de fútbol con ligas, clubes y modos de carrera.`},
+      { id:'nba', nombre:'NBA 2K: Courtside', estrellas:4, img:'assets/juegos/nba2k.png',
+        descripcion:`Basket con realismo visual, mi carrera y modos online competitivos.`},
+      { id:'wii', nombre:'Wii Sports Rewind', estrellas:3, img:'assets/juegos/wiisports.png',
+        descripcion:`Minijuegos deportivos con controles accesibles.`}
+    ],
+    aventura:[
+      { id:'zelda', nombre:'Zelda: Breath of Echoes', estrellas:5, img:'assets/juegos/zelda.png',
+        descripcion:`Aventura mundo abierto, exploración, puzzles y narrativa inmersiva.`},
+      { id:'uncharted', nombre:'Uncharted: Lost Relics', estrellas:4, img:'assets/juegos/uncharted.png',
+        descripcion:`Aventura cinemática con puzles y acción.`},
+      { id:'tombraider', nombre:'Tomb Raider: Reborn', estrellas:4, img:'assets/juegos/lara.png',
+        descripcion:`Acción-aventura centrado en supervivencia y exploración.`}
+    ]
+  },
+
+  musica:{
+    romantica:[
+      { id:'rom1', title:'Amor Eterno (demo)', audio:'assets/audio/romance1.mp3' }, // --- REEMPLAZAR: audio mp3
+      { id:'rom2', title:'Balada Nocturna', audio:'assets/audio/romance2.mp3' },
+      { id:'rom3', title:'Susurros', audio:'assets/audio/romance3.mp3' }
+    ],
+    reggaeton:[
+      { id:'reg1', title:'Ritmo Callejero', audio:'assets/audio/reggaeton1.mp3' },
+      { id:'reg2', title:'Noche y Baile', audio:'assets/audio/reggaeton2.mp3' }
+    ],
+    rock:[
+      { id:'rock1', title:'Guitarra en Llamas', audio:'assets/audio/rock1.mp3' },
+      { id:'rock2', title:'Amanecer Eléctrico', audio:'assets/audio/rock2.mp3' }
+    ],
+    pop:[
+      { id:'pop1', title:'Día Brillante', audio:'assets/audio/pop1.mp3' },
+      { id:'pop2', title:'Canto de Ciudad', audio:'assets/audio/pop2.mp3' }
+    ],
+    clasica:[
+      { id:'clas1', title:'Nocturno en Azul', audio:'assets/audio/classic1.mp3' },
+      { id:'clas2', title:'Concierto para Sol', audio:'assets/audio/classic2.mp3' }
+    ]
+  }
+};
+
+/* ============================
+   Estado y utilidades
+   ============================ */
+let historyStack = []; // guarda pasos como strings: 'main', 'juegos', 'juegos:anime', 'game:naruto', 'musica', 'musica:reggaeton', 'song:reg1', 'sobre'
+const mainMenu = document.getElementById('mainMenu');
+const submenuArea = document.getElementById('submenuArea');
+const contentArea = document.getElementById('contentArea');
+const blankState = document.getElementById('blankState');
+const infoGif = document.getElementById('infoGif');
+const backBtn = document.getElementById('backBtn');
+
+/* Inicio: mostrar solo menú principal y blank */
+function resetToMain(){
+  mainMenu.style.display='flex';
+  submenuArea.innerHTML='';
+  blankState.style.display='flex';
+  // clear content children except blank and infoGif
+  Array.from(contentArea.children).forEach(ch=>{
+    if(ch !== blankState && ch !== infoGif) ch.remove();
+  });
+  historyStack = ['main'];
+}
+resetToMain();
+
+/* Animation helper: inject buttons with staggered slide-down */
+function renderButtonsStagger(parent, items, onClickPrefix){
+  parent.innerHTML='';
+  items.forEach((it, i)=>{
+    const btn = document.createElement('button');
+    btn.className='menu-btn';
+    btn.style.opacity=0;
+    btn.style.transform='translateY(-18px)';
+    btn.style.animation = `slideIn ${400}ms cubic-bezier(.2,.85,.25,1) forwards`;
+    btn.style.animationDelay = (i*80)+'ms';
+    btn.textContent = it.label;
+    btn.onclick = ()=> it.onClick();
+    parent.appendChild(btn);
+  });
+}
+/* Keyframe injected for slideIn (to ensure it works even when created by JS) */
+const kf = document.createElement('style');
+kf.innerHTML = `@keyframes slideIn { to { opacity:1; transform:translateY(0);} }`;
+document.head.appendChild(kf);
+
+/* ========= NAVIGATION ========= */
+function openSection(section){
+  // sections: 'juegos', 'musica', 'sobre'
+  historyStack.push(section);
+  mainMenu.style.display='none';
+  submenuArea.innerHTML='';
+  blankState.style.display='none';
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+
+  if(section === 'juegos'){
+    // build category buttons from DATA.juegos keys
+    const cats = Object.keys(DATA.juegos).map(k=>({
+      label: k.charAt(0).toUpperCase()+k.slice(1),
+      onClick: ()=> openCategoryGame(k)
+    }));
+    renderButtonsStagger(submenuArea, cats);
+  }
+
+  if(section === 'musica'){
+    const cats = Object.keys(DATA.musica).map(k=>({
+      label: k.charAt(0).toUpperCase()+k.slice(1),
+      onClick: ()=> openCategoryMusic(k)
+    }));
+    renderButtonsStagger(submenuArea, cats);
+  }
+
+  if(section === 'sobre'){
+    // render DNI cards directly; no submenu
+    renderSobre();
+  }
+}
+
+/* goBack function - solo un botón Regresar */
+function goBack(){
+  // pop current
+  if(historyStack.length<=1){
+    // at main: do nothing else than reset
+    resetToMain();
+    return;
+  }
+  historyStack.pop();
+  const prev = historyStack[historyStack.length-1];
+  // handle prev states
+  if(prev === 'main'){
+    resetToMain();
+    return;
+  }
+  // if prev is 'juegos' or 'musica' show their categories
+  if(prev === 'juegos'){
+    openSection('juegos');
+    historyStack = ['main','juegos']; // normalize
+    return;
+  }
+  if(prev && prev.startsWith('juegos:')){
+    const cat = prev.split(':')[1];
+    openSection('juegos');
+    setTimeout(()=> openCategoryGame(cat), 120); // small delay so menu animates
+    return;
+  }
+  if(prev === 'musica'){
+    openSection('musica');
+    historyStack = ['main','musica']; return;
+  }
+  if(prev && prev.startsWith('musica:')){
+    const cat = prev.split(':')[1];
+    openSection('musica');
+    setTimeout(()=> openCategoryMusic(cat), 120); return;
+  }
+  if(prev === 'sobre'){
+    openSection('sobre');
+    historyStack = ['main','sobre']; return;
+  }
+  // if prev is a game detail 'game:naruto'
+  if(prev && prev.startsWith('game:')){
+    const [_, gameid] = prev.split(':');
+    // find which category contains it, and show that category list
+    for(const cat of Object.keys(DATA.juegos)){
+      if(DATA.juegos[cat].some(g=>g.id===gameid)){
+        openSection('juegos');
+        setTimeout(()=> openCategoryGame(cat),120);
+        historyStack = ['main','juegos', 'juegos:'+cat];
+        return;
+      }
+    }
+  }
+  // if prev is a song 'song:reg1'
+  if(prev && prev.startsWith('song:')){
+    const [_, sid] = prev.split(':');
+    for(const cat of Object.keys(DATA.musica)){
+      if(DATA.musica[cat].some(s=>s.id===sid)){
+        openSection('musica');
+        setTimeout(()=> openCategoryMusic(cat),120);
+        historyStack = ['main','musica','musica:'+cat];
+        return;
+      }
+    }
+  }
+
+  // fallback
+  resetToMain();
+}
+
+/* ========= GAMES FLOW ========= */
+function openCategoryGame(cat){
+  historyStack.push('juegos:'+cat);
+  submenuArea.innerHTML=''; // show list of games in this submenu area
+  blankState.style.display='none';
+  // create buttons for games in category
+  const list = DATA.juegos[cat].map(g => ({
+    label: g.nombre,
+    onClick: ()=> openGameDetail(cat,g.id)
+  }));
+  renderButtonsStagger(submenuArea, list);
+  // clear content area
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+}
+
+function openGameDetail(cat, gameId){
+  const game = DATA.juegos[cat].find(g=>g.id===gameId);
+  if(!game) return;
+  historyStack.push('game:'+game.id);
+  // set infoGif background area for games (you may replace URL)
+  // --- REEMPLAZAR: aquí puedes poner la ruta de tu GIF para fondo de juegos ---
+  // ejemplo: infoGif.style.backgroundImage = "url('assets/gifs/games_bg.gif')";
+  infoGif.style.backgroundImage = ""; // por defecto vacío (usuario reemplaza)
+  // Render half/half view: left image (PNG sin fondo recommended), right info (no cuadro blanco)
+  // Remove blank state
+  blankState.style.display='none';
+  // Clear previous
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+
+  const vs = document.createElement('div'); vs.className='view-split';
+  // left image container: image floats without frame (user-supplied)
+  const left = document.createElement('div'); left.className='left-image';
+  const img = document.createElement('img');
+  img.alt = game.nombre;
+  img.src = game.img; // --- REEMPLAZAR: ruta a imagen PNG sin fondo por juego ---
+  left.appendChild(img);
+  // right info
+  const right = document.createElement('div'); right.className='right-info';
+  right.innerHTML = `
+    <div class="info-title">${game.nombre}</div>
+    <div class="info-meta">Desarrollador: <b>${extractMeta(game.descripcion,'Desarrollador')}</b> · Año: <b>${extractMeta(game.descripcion,'Año')}</b> · Género: <b>${extractMeta(game.descripcion,'Género')}</b></div>
+    <div class="info-desc">${game.descripcion}</div>
+    <div class="stars">${'★'.repeat(game.estrellas)}${'☆'.repeat(5-game.estrellas)} &nbsp;&nbsp;(${game.estrellas}/5)</div>
+  `;
+  vs.appendChild(left); vs.appendChild(right);
+  contentArea.appendChild(vs);
+  // small hover/enhancements
+  img.addEventListener('mouseenter', ()=> img.style.transform='scale(1.02)');
+  img.addEventListener('mouseleave', ()=> img.style.transform='scale(1)');
+}
+
+/* helper: parse metadata lines from description if present */
+function extractMeta(desc, key){
+  const re = new RegExp(key+':\\s*([^\\n\\r]+)','i');
+  const m = desc.match(re);
+  return m ? m[1].trim() : '—';
+}
+
+/* ========= MUSIC FLOW ========= */
+let currentAudio = null;
+let currentAudioId = null;
+let progressInterval = null;
+
+function openCategoryMusic(cat){
+  historyStack.push('musica:'+cat);
+  submenuArea.innerHTML='';
+  // create song buttons
+  const list = DATA.musica[cat].map(s=>({
+    label: s.title,
+    onClick: ()=> openSong(cat,s.id)
+  }));
+  renderButtonsStagger(submenuArea, list);
+  // clear content area
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+}
+
+function openSong(cat, songId){
+  const song = DATA.musica[cat].find(s=>s.id===songId);
+  if(!song) return;
+  historyStack.push('song:'+song.id);
+  // set infoGif background area for music
+  // --- REEMPLAZAR: infoGif.style.backgroundImage = "url('assets/gifs/music_bg.gif')"; ---
+  infoGif.style.backgroundImage = "";
+  // clear existing views
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+  // build music view
+  const view = document.createElement('div'); view.className='music-view';
+  const container = document.createElement('div'); container.className='player right-info'; // reuse right-info look for consistency
+  container.innerHTML = `
+    <div class="meta">
+      <div>
+        <div class="song-title">${song.title}</div>
+        <div class="info-meta">Categoría: ${capitalize(cat)} · ID: ${song.id}</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div class="waveform" id="waveform">
+          <div class="bar" style="height:10px"></div>
+          <div class="bar" style="height:16px"></div>
+          <div class="bar" style="height:8px"></div>
+          <div class="bar" style="height:22px"></div>
+          <div class="bar" style="height:12px"></div>
+          <div class="bar" style="height:18px"></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="controls">
+      <button class="ctl-btn" id="btnRew">⏪ 10s</button>
+      <button class="ctl-btn" id="btnPlay" aria-pressed="false">▶</button>
+      <button class="ctl-btn" id="btnFwd">10s ⏩</button>
+      <div style="flex:1"></div>
+      <div style="min-width:140px" id="timeLabel">00:00 / 00:00</div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="progress" id="progressBar"><div class="bar" id="progressFill"></div></div>
+    <audio id="audioEl" preload="metadata">
+      <source src="${song.audio}" type="audio/mpeg">
+      Tu navegador no soporta audio.
+    </audio>
+  `;
+  view.appendChild(container);
+  contentArea.appendChild(view);
+
+  // hookup player
+  const audioEl = document.getElementById('audioEl');
+  const btnPlay = document.getElementById('btnPlay');
+  const btnRew = document.getElementById('btnRew');
+  const btnFwd = document.getElementById('btnFwd');
+  const progressFill = document.getElementById('progressFill');
+  const timeLabel = document.getElementById('timeLabel');
+  const waveform = document.getElementById('waveform');
+
+  // set currentAudio
+  if(currentAudio && currentAudio !== audioEl){
+    try { currentAudio.pause(); currentAudio.currentTime=0; } catch(e){}
+  }
+  currentAudio = audioEl; currentAudioId = song.id;
+
+  // play/pause toggle with single icon
+  btnPlay.onclick = ()=> {
+    if(audioEl.paused){
+      audioEl.play().catch(()=>{/* autoplay policy may block until interaction */});
+    } else audioEl.pause();
+  };
+  btnRew.onclick = ()=> { audioEl.currentTime = Math.max(0, audioEl.currentTime - 10); updateProgress(); };
+  btnFwd.onclick = ()=> { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 10); updateProgress(); };
+
+  // Hook events
+  audioEl.onplay = ()=> {
+    btnPlay.innerHTML = '⏸'; // show pause icon only
+    waveform.classList.add('playing');
+    // animate bars randomly to feel like waveform (CSS animation running)
+  };
+  audioEl.onpause = ()=> {
+    btnPlay.innerHTML = '▶';
+    waveform.classList.remove('playing');
+  };
+  audioEl.ontimeupdate = updateProgress;
+  audioEl.onloadedmetadata = updateProgress;
+  audioEl.onended = ()=> { btnPlay.innerHTML='▶'; waveform.classList.remove('playing'); };
+
+  // click on progress to seek
+  const progressBar = document.getElementById('progressBar');
+  progressBar.onclick = (ev)=>{
+    const rect = progressBar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (ev.clientX - rect.left)/rect.width));
+    audioEl.currentTime = pct * (audioEl.duration || 0);
+    updateProgress();
+  };
+
+  function updateProgress(){
+    const d = audioEl.duration || 0;
+    const t = audioEl.currentTime || 0;
+    const pct = d ? (t/d*100) : 0;
+    progressFill.style.width = pct + '%';
+    timeLabel.textContent = formatTime(t) + ' / ' + (d?formatTime(d):'00:00');
+  }
+
+  function formatTime(sec){
+    if(isNaN(sec)) return '00:00';
+    const m = Math.floor(sec/60).toString().padStart(2,'0');
+    const s = Math.floor(sec%60).toString().padStart(2,'0');
+    return m+':'+s;
+  }
+}
+
+/* ========= SOBRE MÍ rendering ========= */
+function renderSobre(){
+  historyStack.push('sobre');
+  // clear submenu and content
+  submenuArea.innerHTML='';
+  blankState.style.display='none';
+  contentArea.querySelectorAll('.view-split, .music-view, .dni-grid').forEach(e=>e.remove());
+
+  const grid = document.createElement('div'); grid.className='dni-grid';
+  grid.innerHTML = `
+    <div class="dni-card">
+      <div class="dni-header">
+        <div class="dni-photo" id="alumnoFoto"></div>
+        <div class="dni-info">
+          <h3>Alumno</h3>
+          <div class="dni-field"><b>Nombre:</b> <span id="alumnoNombre">[Tu nombre]</span></div>
+          <div class="dni-field"><b>DNI:</b> <span id="alumnoDNI">[Número]</span></div>
+          <div class="dni-field"><b>Curso:</b> <span id="alumnoCurso">[Curso]</span></div>
+        </div>
+      </div>
+      <div class="dni-field"><b>Descripción:</b>
+        <div style="margin-top:8px;color:rgba(255,255,255,0.85)" id="alumnoDesc">[Escribe aquí una breve biografía o lo que haces]</div>
+      </div>
+    </div>
+
+    <div class="dni-card">
+      <div class="dni-header">
+        <div class="dni-photo" id="docFoto"></div>
+        <div class="dni-info">
+          <h3>Docente</h3>
+          <div class="dni-field"><b>Nombre:</b> <span id="docNombre">[Nombre docente]</span></div>
+          <div class="dni-field"><b>Materia:</b> <span id="docMateria">[Materia]</span></div>
+          <div class="dni-field"><b>Contacto:</b> <span id="docContacto">[Email]</span></div>
+        </div>
+      </div>
+      <div class="dni-field"><b>Observaciones:</b>
+        <div style="margin-top:8px;color:rgba(255,255,255,0.85)" id="docObs">[Comentarios del docente]</div>
+      </div>
+    </div>
+  `;
+  contentArea.appendChild(grid);
+
+  // You can replace the innerHTML of '.dni-photo' with an <img src="..."> if you have images
+  document.getElementById('alumnoFoto').style.backgroundImage = "url('assets/persona/alumno.png')"; // --- REEMPLAZAR: foto alumno
+  document.getElementById('alumnoFoto').style.backgroundSize = 'cover';
+  document.getElementById('docFoto').style.backgroundImage = "url('assets/persona/docente.png')"; // --- REEMPLAZAR: foto docente
+  document.getElementById('docFoto').style.backgroundSize = 'cover';
+}
+
+/* ========= Helpers ========= */
+function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
+
+/* ========= Inicial: ocultar back si estamos en main ========= */
+(function init(){
+  historyStack = ['main'];
+  // initially hide backBtn? We keep it active but behavior is handled in goBack()
+  // blankState visible already
+})();
+
+</script>
+
+<!-- ====== Instrucciones rápidas para que encuentres y reemplaces archivos ======
+  - Imágenes de juegos: en DATA.juegos[...] -> propiedad "img":
+      ejemplo: assets/juegos/naruto.png
+    Sustitúyelas por tus PNGs (preferible PNG sin fondo). Están cargadas en:
+      DATA.juegos.anime[0].img, etc.
+
+  - GIF de fondo de INFO (opcional): en JS función openGameDetail y openSong
+      busca: infoGif.style.backgroundImage = ""
+      y reemplaza por:
+      infoGif.style.backgroundImage = "url('assets/gifs/games_bg.gif')"
+      o para música otro GIF cuando abras una canción.
+
+  - Audios: en DATA.musica[...] -> propiedad "audio":
+      ejemplo: assets/audio/romance1.mp3
+    Sustituye por tus audios (mp3/ogg) y estarán cargados en el reproductor.
+
+  - IMPORTANTE: las imágenes DEBERÍAN ser transparentes (PNG) si quieres que floten sin cuadro.
+  - El único botón 'Regresar' es el ubicado en la barra lateral inferior; úsalo para retroceder.
+
+  Si quieres que yo inserte rutas específicas (por ejemplo tus archivos en URLs),
+  pásame las rutas y las coloco donde indica "REEMPLAZAR".
+=============================================================== -->
+
+</body>
+</html>
